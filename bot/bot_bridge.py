@@ -123,11 +123,14 @@ def validate_state(state: dict[str, Any]) -> tuple[bool, list[str], dict[str, An
     speed = _number(self_packet.get("sp"), float("nan"))
     mass = _number(self_packet.get("fam"), float("nan"))
 
+    # Current slither.com runtime can report coordinates outside the older
+    # 0..21000 assumption. Treat world bounds as telemetry, not a Phase 1
+    # command blocker.
     if not (config.WORLD_MIN <= x <= config.WORLD_MAX):
-        errors.append(f"self.x out of world range: {x}")
+        metrics["self_x_world_warning"] = f"out_of_expected_range:{x}"
 
     if not (config.WORLD_MIN <= y <= config.WORLD_MAX):
-        errors.append(f"self.y out of world range: {y}")
+        metrics["self_y_world_warning"] = f"out_of_expected_range:{y}"
 
     if not (0.0 <= angle < config.TWO_PI):
         errors.append(f"self.ang not normalized radians: {angle}")
@@ -135,7 +138,9 @@ def validate_state(state: dict[str, Any]) -> tuple[bool, list[str], dict[str, An
     if not (0.0 <= speed <= config.MAX_REASONABLE_SPEED):
         errors.append(f"self.sp unreasonable: {speed}")
 
-    if not (0.0 < mass <= config.MAX_REASONABLE_MASS):
+    # Some current builds expose self.fam as 0 at spawn/runtime. Keep this as
+    # telemetry for now; Phase 1 only needs command round trip.
+    if not (0.0 <= mass <= config.MAX_REASONABLE_MASS):
         errors.append(f"self.fam unreasonable: {mass}")
 
     snakes = state.get("snakes", [])

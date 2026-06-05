@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Slither Bot Phase 1",
+  "version": "0.1.0",
+  "description": "Phase 1 Slither.io data pipeline: page-state extraction, native messaging bridge, and dummy command steering.",
+  "permissions": [
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "https://slither.io/*",
+    "http://slither.io/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://slither.io/*",
+        "http://slither.io/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": false
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "inject.js"
+      ],
+      "matches": [
+        "https://slither.io/*",
+        "http://slither.io/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_title": "Slither Bot Phase 1"
+  }
+}

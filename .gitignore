@@ -6,3 +6,7 @@ logs/
 *.log
 *.jsonl
 .DS_Store
+
+# Local native messaging host files
+com.slither.bot.json
+run_native_host.cmd
